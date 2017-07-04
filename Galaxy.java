@@ -10,8 +10,8 @@ import java.util.*;
 class Galaxy {
 	public static void main(String args[]) {
 
-		ArrayList<String> nameContainer = new ArrayList<String>();	// name attributes under <test>
-		ArrayList<String> valueContainer = new ArrayList<String>();	// value attributes under <test>
+		ArrayList<String> valueTestContainer = new ArrayList<String>();		// value attributes under <test>
+		ArrayList<String> valueInputsContainer = new ArrayList<String>();	// value attributes under <inputs>
 
 		try {
 
@@ -22,25 +22,60 @@ class Galaxy {
 			XPath xpath = xpf.newXPath();
 			
 			// file reading
-			InputSource f = new InputSource("/home/dilapitan/Desktop/test.xml");
+			InputSource f = new InputSource("/home/dilapitan/Desktop/xml-parsing/test.xml");
 	       
+
+	       	// <TEST>
 	       	// using xpath to get to <param> via traversing the nodes
-	        NodeList nl = (NodeList) xpath.evaluate("/tool/tests/test/param/@*", f, XPathConstants.NODESET);
+	        NodeList nlTest = (NodeList) xpath.evaluate("/tool/tests/test/param/@*", f, XPathConstants.NODESET);
 	        
 	       	// traversing the <param> under <test> and retrieving its attributes
-	        int nlLength = nl.getLength();
-	        for (int i = 0; i < nlLength; i++) {
-	        	Attr at = (Attr) nl.item(i);
-	        	String name = at.getName();
-	        	String value = at.getValue();
+	        int nlTestLength = nlTest.getLength();
+	        for (int i = 0; i < nlTestLength; i++) {
+	        	Attr atTest = (Attr) nlTest.item(i);
+	        	String nameTest = atTest.getName();
+	        	String valueTest = atTest.getValue();
 
-	        	nameContainer.add(name);
-	        	valueContainer.add(value);
+	        	valueTestContainer.add(valueTest);
 	        }
 
-	        System.out.println("name container: " + nameContainer);
-	        System.out.println("value container: " + valueContainer);
+	        // <INPUTS>
+	        NodeList nlInputs = (NodeList) xpath.evaluate("/tool/inputs/param/@*", f, XPathConstants.NODESET);
 
+	        //traversing the <param> under <input> and cross checking its attributes in the value container under <test>
+	        int nlInputsLength = nlInputs.getLength();
+	        for (int i = 0; i < nlInputsLength; i++) {
+	        	Attr atInputs = (Attr) nlInputs.item(i);
+	        	String nameInputs = atInputs.getName();
+	        	String valueInputs = atInputs.getValue();
+	        	if (nameInputs.equals("name")) {	// checking only the 'name' attribute
+	        		valueInputsContainer.add(valueInputs);
+	        		valueInputsContainer.add("-1");	// magic number to make the length of the valueInputsContainer equal to the valueTestContainer
+	        	}
+	        }
+
+	        /* 			Just a test. Actual is automation in the input fields using Selenium Web Driver.
+	         *		Data that will be automated will come from the <test> / valueTestContainer 
+	         *		via driver.sendKeys()
+	         */		
+
+	        System.out.println("\n -- Dummy for Input fields -- \n");
+
+	        Inputs in = new Inputs();
+	        int count = 1;
+
+	        // printing the values of the <input> and its expected value from the <test>
+	        for (int i = 0; i < nlTestLength; i+=2) {
+	        	if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
+	        		in.name = valueTestContainer.get(i);
+	        		in.expectedValue = valueTestContainer.get(i+1);
+	        	}
+
+	        	System.out.println("param " + count);
+	        	count++;
+	        	System.out.println("name: " + in.name);
+	        	System.out.println("expected value: " + in.expectedValue + "\n");
+	        }
  		}
 		catch (Exception e) {
 			e.printStackTrace();
