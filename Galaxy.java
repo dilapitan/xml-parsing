@@ -10,7 +10,7 @@ import java.util.*;
 class Galaxy {
 	public static void main(String args[]) {
 
-		ArrayList<String> valueTestContainer = new ArrayList<String>();		// value attributes under <test>
+		ArrayList<String> valueTestContainer   = new ArrayList<String>();	// value attributes under <test>
 		ArrayList<String> valueInputsContainer = new ArrayList<String>();	// value attributes under <inputs>
 
 		try {
@@ -54,7 +54,7 @@ class Galaxy {
 	        	}
 	        }
 
-	        /* 			Just a test. Actual is automation in the input fields using Selenium Web Driver.
+	        /* 		Just a test. Actual is automation in the input fields using Selenium Web Driver.
 	         *		Data that will be automated will come from the <test> / valueTestContainer 
 	         *		via driver.sendKeys()
 	         */		
