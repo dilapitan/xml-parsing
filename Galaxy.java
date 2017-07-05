@@ -1,3 +1,6 @@
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
@@ -16,15 +19,20 @@ class Galaxy {
 		try {
 
 			// source: https://stackoverflow.com/questions/2460592/xpath-how-to-get-all-the-attribute-names-and-values-of-an-element
-			
+			// source: https://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+
 			// set up
+			InputSource f = new InputSource("/home/dilapitan/Desktop/xml-parsing/test.xml"); // file reading
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(f);
+			
+			doc.getDocumentElement().normalize();
+			System.out.println("\n\n-- Tool name: " + doc.getDocumentElement().getAttribute("name") + " --");
+
 			XPathFactory xpf = XPathFactory.newInstance();
 			XPath xpath = xpf.newXPath();
 			
-			// file reading
-			InputSource f = new InputSource("/home/dilapitan/Desktop/xml-parsing/test.xml");
-	       
-
 	       	// <TEST>
 	       	// using xpath to get to <param> via traversing the nodes
 	        NodeList nlTest = (NodeList) xpath.evaluate("/tool/tests/test/param/@*", f, XPathConstants.NODESET);
@@ -59,7 +67,7 @@ class Galaxy {
 	         *		via driver.sendKeys()
 	         */		
 
-	        System.out.println("\n -- Dummy for Input fields -- \n");
+	        System.out.println("-- Dummy for Input fields -- \n");
 
 	        Inputs in = new Inputs();
 	        int count = 1;
