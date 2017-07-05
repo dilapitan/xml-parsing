@@ -22,7 +22,7 @@ class Galaxy {
 			XPath xpath = xpf.newXPath();
 			
 			// file reading
-			InputSource f = new InputSource("/home/dilapitan/Desktop/xml-parsing/test.xml");
+			InputSource f = new InputSource("/home/dom/Desktop/xml-parsing/test.xml");
 	       
 
 	       	// <TEST>
