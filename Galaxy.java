@@ -9,9 +9,29 @@ import javax.xml.xpath.*;
 import org.xml.sax.InputSource; 
 import org.w3c.dom.Attr;
 import java.util.*;
+import java.io.InputStream;
 
 class Galaxy {
 	public static void main(String args[]) {
+
+		try {
+			File dir = new File("/home/dom/Desktop/xml-parsing/xml-files/");
+			File[] listOfFiles = dir.listFiles();
+			Arrays.sort(listOfFiles);
+			
+			for (File path : listOfFiles) {
+				if (path.isFile() && path.getName().endsWith(".xml")) {
+					retrieveValues(path);
+					break;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void retrieveValues(File fileName) {
 
 		ArrayList<String> valueTestContainer   = new ArrayList<String>();	// value attributes under <test>
 		ArrayList<String> valueInputsContainer = new ArrayList<String>();	// value attributes under <inputs>
@@ -20,12 +40,12 @@ class Galaxy {
 
 			// source: https://stackoverflow.com/questions/2460592/xpath-how-to-get-all-the-attribute-names-and-values-of-an-element
 			// source: https://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+			// source: https://stackoverflow.com/questions/2811001/how-to-read-xml-using-xpath-in-java
 
 			// set up
-			InputSource f = new InputSource("/home/dom/Desktop/xml-parsing/test.xml"); // file reading
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(f);
+			Document doc = dBuilder.parse(fileName);
 			
 			doc.getDocumentElement().normalize();
 			System.out.println("\n\n-- Tool name: " + doc.getDocumentElement().getAttribute("name") + " --");
@@ -35,8 +55,11 @@ class Galaxy {
 			
 	       	// <TEST>
 	       	// using xpath to get to <param> via traversing the nodes
-	        NodeList nlTest = (NodeList) xpath.evaluate("/tool/tests/test/param/@*", f, XPathConstants.NODESET);
+	        //NodeList nlTest = (NodeList) xpath.evaluate("/tool/tests/test/param/@*", fileName, XPathConstants.NODESET);
 	        
+			XPathExpression expr = xpath.compile("/tool/tests/test/param/@*");
+			NodeList nlTest = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+
 	       	// traversing the <param> under <test> and retrieving its attributes
 	        int nlTestLength = nlTest.getLength();
 	        for (int i = 0; i < nlTestLength; i++) {
@@ -44,11 +67,19 @@ class Galaxy {
 	        	String nameTest = atTest.getName();
 	        	String valueTest = atTest.getValue();
 
+	        	//System.out.println("value only: " + valueTest);
 	        	valueTestContainer.add(valueTest);
 	        }
 
+	        /*System.out.println("value test container: " + valueTestContainer);
+	        System.out.println("length: " + valueTestContainer.size());
+	        System.exit(0);*/
+
 	        // <INPUTS>
-	        NodeList nlInputs = (NodeList) xpath.evaluate("/tool/inputs/param/@*", f, XPathConstants.NODESET);
+	        //NodeList nlInputs = (NodeList) xpath.evaluate("/tool/inputs/param/@*", fileName, XPathConstants.NODESET);
+	        XPathExpression expr2 = xpath.compile("/tool/inputs/param/@*");
+			NodeList nlInputs = (NodeList) expr2.evaluate(doc, XPathConstants.NODESET);
+
 
 	        //traversing the <param> under <input> and cross checking its attributes in the value container under <test>
 	        int nlInputsLength = nlInputs.getLength();
@@ -71,7 +102,8 @@ class Galaxy {
 
 	        Inputs in = new Inputs();
 	        int count = 1;
-
+	        
+	        System.out.println("nlInputsLength: " + nlInputsLength);
 	        // printing the values of the <input> and its expected value from the <test>
 	        for (int i = 0; i < nlTestLength; i+=2) {
 	        	if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
@@ -84,6 +116,8 @@ class Galaxy {
 	        	System.out.println("name: " + in.name);
 	        	System.out.println("expected value: " + in.expectedValue + "\n");
 	        }
+
+
  		}
 		catch (Exception e) {
 			e.printStackTrace();
