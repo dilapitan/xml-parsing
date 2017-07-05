@@ -9,7 +9,8 @@ class Multiple {
 			Arrays.sort(listOfFiles);
 			
 			for (File path : listOfFiles) {
-				System.out.println(path);
+				if (path.isFile() && path.getName().endsWith(".xml"))
+					System.out.println(path);
 			}
 		}
 		catch (Exception e) {
