@@ -15,7 +15,7 @@ class Galaxy {
 	public static void main(String args[]) {
 
 		try {
-			File dir = new File("/home/dom/Desktop/xml-parsing/xml-files/");
+			File dir = new File("/home/dilapitan/Desktop/xml-parsing/xml-files/");
 			File[] listOfFiles = dir.listFiles();
 			Arrays.sort(listOfFiles);
 			
@@ -54,9 +54,11 @@ class Galaxy {
 			XPath xpath = xpf.newXPath();
 			
 	       	// <TEST>
+
+	       	// counting the <test>
+			NodeList testTagList = doc.getElementsByTagName("test");  // from: https://www.mkyong.com/java/how-to-count-xml-elements-in-java-dom-parser/
+		
 	       	// using xpath to get to <param> via traversing the nodes
-	        //NodeList nlTest = (NodeList) xpath.evaluate("/tool/tests/test/param/@*", fileName, XPathConstants.NODESET);
-	        
 			XPathExpression expr = xpath.compile("/tool/tests/test/param/@*");
 			NodeList nlTest = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
@@ -67,16 +69,10 @@ class Galaxy {
 	        	String nameTest = atTest.getName();
 	        	String valueTest = atTest.getValue();
 
-	        	//System.out.println("value only: " + valueTest);
 	        	valueTestContainer.add(valueTest);
 	        }
 
-	        /*System.out.println("value test container: " + valueTestContainer);
-	        System.out.println("length: " + valueTestContainer.size());
-	        System.exit(0);*/
-
 	        // <INPUTS>
-	        //NodeList nlInputs = (NodeList) xpath.evaluate("/tool/inputs/param/@*", fileName, XPathConstants.NODESET);
 	        XPathExpression expr2 = xpath.compile("/tool/inputs/param/@*");
 			NodeList nlInputs = (NodeList) expr2.evaluate(doc, XPathConstants.NODESET);
 
@@ -100,21 +96,24 @@ class Galaxy {
 
 	        System.out.println("-- Dummy for Input fields -- \n");
 
-	        Inputs in = new Inputs();
-	        int count = 1;
-	        
-	        System.out.println("nlInputsLength: " + nlInputsLength);
-	        // printing the values of the <input> and its expected value from the <test>
-	        for (int i = 0; i < nlTestLength; i+=2) {
-	        	if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
-	        		in.name = valueTestContainer.get(i);
-	        		in.expectedValue = valueTestContainer.get(i+1);
-	        	}
+	        int testTagCount = testTagList.getLength();
+	        for (int k = 0; k < testTagCount; k++) {
+	        	Inputs in = new Inputs();
+		        int count = 1;
+		        
+		        System.out.println("nlInputsLength: " + nlInputsLength);
+		        // printing the values of the <input> and its expected value from the <test>
+		        for (int i = 0; i < nlTestLength; i+=2) {
+		        	if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
+		        		in.name = valueTestContainer.get(i);
+		        		in.expectedValue = valueTestContainer.get(i+1);
+		        	}
 
-	        	System.out.println("param " + count);
-	        	count++;
-	        	System.out.println("name: " + in.name);
-	        	System.out.println("expected value: " + in.expectedValue + "\n");
+		        	System.out.println("param " + count);
+		        	count++;
+		        	System.out.println("name: " + in.name);
+		        	System.out.println("expected value: " + in.expectedValue + "\n");
+	       		}
 	        }
 
 
