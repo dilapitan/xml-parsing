@@ -19,10 +19,11 @@ class Galaxy {
 			File[] listOfFiles = dir.listFiles();
 			Arrays.sort(listOfFiles);
 			
+			int toolCount = 1;
 			for (File path : listOfFiles) {
 				if (path.isFile() && path.getName().endsWith(".xml")) {
-					retrieveValues(path);
-					break;
+					retrieveValues(path, toolCount);
+					toolCount++;
 				}
 			}
 		}
@@ -31,7 +32,7 @@ class Galaxy {
 		}
 	}
 
-	public static void retrieveValues(File fileName) {
+	public static void retrieveValues(File fileName, int toolCount) {
 
 		ArrayList<String> valueTestContainer   = new ArrayList<String>();	// value attributes under <test>
 		ArrayList<String> valueInputsContainer = new ArrayList<String>();	// value attributes under <inputs>
@@ -48,7 +49,7 @@ class Galaxy {
 			Document doc = dBuilder.parse(fileName);
 			
 			doc.getDocumentElement().normalize();
-			System.out.println("\n\n-- Tool name: " + doc.getDocumentElement().getAttribute("name") + " --");
+			System.out.println("\n\n=== Tool no:" + toolCount + " | name: " + doc.getDocumentElement().getAttribute("name") + " ===");
 
 			XPathFactory xpf = XPathFactory.newInstance();
 			XPath xpath = xpf.newXPath();
@@ -57,7 +58,8 @@ class Galaxy {
 
 	       	// counting the <test>
 			NodeList testTagList = doc.getElementsByTagName("test");  // from: https://www.mkyong.com/java/how-to-count-xml-elements-in-java-dom-parser/
-		
+			int testTagCount = testTagList.getLength();
+
 	       	// using xpath to get to <param> via traversing the nodes
 			XPathExpression expr = xpath.compile("/tool/tests/test/param/@*");
 			NodeList nlTest = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
@@ -79,44 +81,51 @@ class Galaxy {
 
 	        //traversing the <param> under <input> and cross checking its attributes in the value container under <test>
 	        int nlInputsLength = nlInputs.getLength();
-	        for (int i = 0; i < nlInputsLength; i++) {
-	        	Attr atInputs = (Attr) nlInputs.item(i);
-	        	String nameInputs = atInputs.getName();
-	        	String valueInputs = atInputs.getValue();
-	        	if (nameInputs.equals("name")) {	// checking only the 'name' attribute
-	        		valueInputsContainer.add(valueInputs);
-	        		valueInputsContainer.add("-1");	// magic number to make the length of the valueInputsContainer equal to the valueTestContainer
-	        	}
-	        }
+		    for (int t = 0; t < testTagCount; t++) {
+		        for (int i = 0; i < nlInputsLength; i++) {
+		        	Attr atInputs = (Attr) nlInputs.item(i);
+		        	String nameInputs = atInputs.getName();
+		        	String valueInputs = atInputs.getValue();
+		        	if (nameInputs.equals("name")) {	// checking only the 'name' attribute
+		        		valueInputsContainer.add(valueInputs);
+		        		valueInputsContainer.add("-1");	// magic number to make the length of the valueInputsContainer equal to the valueTestContainer
+		        	}
+		        }
+		    }
 
 	        /* 		Just a test. Actual is automation in the input fields using Selenium Web Driver.
 	         *		Data that will be automated will come from the <test> / valueTestContainer 
 	         *		via driver.sendKeys()
 	         */		
 
-	        System.out.println("-- Dummy for Input fields -- \n");
+	        int valuesPerTestTag = nlTestLength / testTagCount;
+	       	int i = 0;
+       		int ntl = nlTestLength;
+   			int testTagCount2 = 1;
+       		while (ntl != 0) {
 
-	        int testTagCount = testTagList.getLength();
-	        for (int k = 0; k < testTagCount; k++) {
-	        	Inputs in = new Inputs();
-		        int count = 1;
-		        
-		        System.out.println("nlInputsLength: " + nlInputsLength);
-		        // printing the values of the <input> and its expected value from the <test>
-		        for (int i = 0; i < nlTestLength; i+=2) {
-		        	if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
+       			int paramCount = 1;
+       			Inputs in = new Inputs();
+       			int temp = valuesPerTestTag;
+       			int temp2 = temp;
+
+       			System.out.println("--- Test tag: " + testTagCount2 + "\n");
+       			while (temp != 0) {
+       				if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
 		        		in.name = valueTestContainer.get(i);
 		        		in.expectedValue = valueTestContainer.get(i+1);
 		        	}
-
-		        	System.out.println("param " + count);
-		        	count++;
+		        	System.out.println("param " + paramCount);
+		        	paramCount++;
 		        	System.out.println("name: " + in.name);
 		        	System.out.println("expected value: " + in.expectedValue + "\n");
-	       		}
-	        }
+		        	i += 2;
+		        	temp -= 2;
+       			}
 
-
+       			ntl -= temp2;
+       			testTagCount2++;
+       		}
  		}
 		catch (Exception e) {
 			e.printStackTrace();
