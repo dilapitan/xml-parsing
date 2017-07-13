@@ -91,7 +91,7 @@ class Galaxy {
 		        	if (nameInputs.equals("name")) {		// checking the 'name' attribute
 		        		valueInputsContainer.add(valueInputs);
 		        	}
-		        	else if (nameInputs.equals("type")) { 	// checking the 'name' attribute
+		        	else if (nameInputs.equals("type")) { 	// checking the 'type' attribute
 		        		valueInputsContainer.add(valueInputs);
 		        	}
 		        }
