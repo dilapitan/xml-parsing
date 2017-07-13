@@ -24,7 +24,9 @@ class Galaxy {
 				if (path.isFile() && path.getName().endsWith(".xml")) {
 					retrieveValues(path, toolCount);
 					toolCount++;
+					break;
 				}
+
 			}
 		}
 		catch (Exception e) {
@@ -86,9 +88,11 @@ class Galaxy {
 		        	Attr atInputs = (Attr) nlInputs.item(i);
 		        	String nameInputs = atInputs.getName();
 		        	String valueInputs = atInputs.getValue();
-		        	if (nameInputs.equals("name")) {	// checking only the 'name' attribute
+		        	if (nameInputs.equals("name")) {		// checking the 'name' attribute
 		        		valueInputsContainer.add(valueInputs);
-		        		valueInputsContainer.add("-1");	// magic number to make the length of the valueInputsContainer equal to the valueTestContainer
+		        	}
+		        	else if (nameInputs.equals("type")) { 	// checking the 'name' attribute
+		        		valueInputsContainer.add(valueInputs);
 		        	}
 		        }
 		    }
@@ -114,11 +118,13 @@ class Galaxy {
        				if ( (valueInputsContainer.get(i)).equals((valueTestContainer.get(i))) ) {
 		        		in.name = valueTestContainer.get(i);
 		        		in.expectedValue = valueTestContainer.get(i+1);
+		        		in.type = valueInputsContainer.get(i+1);
 		        	}
 		        	System.out.println("param " + paramCount);
 		        	paramCount++;
 		        	System.out.println("name: " + in.name);
-		        	System.out.println("expected value: " + in.expectedValue + "\n");
+		        	System.out.println("expected value: " + in.expectedValue);
+		        	System.out.println("type: " + in.type  + "\n");
 		        	i += 2;
 		        	temp -= 2;
        			}
