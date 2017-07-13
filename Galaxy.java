@@ -15,7 +15,7 @@ class Galaxy {
 	public static void main(String args[]) {
 
 		try {
-			File dir = new File("/home/dilapitan/Desktop/xml-parsing/xml-files/");
+			File dir = new File("/home/dom/Desktop/xml-parsing/xml-files/");
 			File[] listOfFiles = dir.listFiles();
 			Arrays.sort(listOfFiles);
 			
